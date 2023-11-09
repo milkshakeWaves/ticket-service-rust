@@ -21,7 +21,7 @@ CREATE TABLE ticket (
     event_id INTEGER NOT NULL,
     PRIMARY KEY (buyer_id, event_id),
 
-    CONSTRAINT buyer_id FOREIGN KEY(buyer_id) REFERENCES buyer(id),
-    CONSTRAINT event_id FOREIGN KEY(event_id) REFERENCES event(id)
+    CONSTRAINT buyer_id FOREIGN KEY(buyer_id) REFERENCES buyer(id) ON DELETE CASCADE,
+    CONSTRAINT event_id FOREIGN KEY(event_id) REFERENCES event(id) ON DELETE CASCADE
 );
 

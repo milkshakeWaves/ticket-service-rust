@@ -1,6 +1,8 @@
 mod services;
 mod repository;
 
+use std::sync::Arc;
+
 use actix_web::{web::Data, App, HttpServer};
 use dotenv::dotenv;
 use services::status;
@@ -18,12 +20,13 @@ async fn main() -> std::io::Result<()> {
         .parse::<u16>()
         .expect("PORT variable is not an int");
 
-    let app_state = PostgresAppState::new(5, &db_connection_string).await;
+    let app_state = PostgresAppState::new(5, &db_connection_string).await.expect("Cannot create postgres pool");
+    let arc_app_state = Arc::new(app_state);
 
     println!("Starting the server...");
     HttpServer::new(move || {
         App::new()
-            .app_data(Data::new(app_state.clone()))
+            .app_data(Data::new(arc_app_state.clone()))
             .service(status)
     })
     .bind((address, port))?
