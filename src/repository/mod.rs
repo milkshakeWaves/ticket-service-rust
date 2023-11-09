@@ -1,4 +1,5 @@
 use sqlx::{postgres::PgPoolOptions, Database, Pool, Postgres};
+use std::time::Duration;
 
 trait AppState<D: Database> {
     fn db(&self) -> Pool<D>;
@@ -17,8 +18,12 @@ impl AppState<Postgres> for PostgresAppState {
 
 // Public impl
 impl PostgresAppState {
-    pub async fn new(max_connections: u32, db_connection_string: &str) -> Result<PostgresAppState, sqlx::Error> {
-        let pool = create_postgres_pool(max_connections, db_connection_string).await?;
+    pub async fn new(
+        max_connections: u32,
+        db_connection_string: &str,
+        timeout: Duration,
+    ) -> Result<PostgresAppState, sqlx::Error> {
+        let pool = create_postgres_pool(max_connections, db_connection_string, timeout).await?;
         Ok(PostgresAppState { db: pool })
     }
 }
@@ -27,9 +32,11 @@ impl PostgresAppState {
 async fn create_postgres_pool(
     max_connections: u32,
     db_connection_string: &str,
+    timeout: Duration,
 ) -> Result<Pool<Postgres>, sqlx::Error> {
     PgPoolOptions::new()
         .max_connections(max_connections)
+        .acquire_timeout(timeout)
         .connect(db_connection_string)
         .await
 }
