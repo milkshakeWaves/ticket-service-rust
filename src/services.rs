@@ -45,7 +45,8 @@ pub async fn create_user(
         Ok(hash) => hash,
         Err(e) => {
             println!("Failed to hash password: {}", e);
-            return HttpResponse::InternalServerError().json("Failed to hash password");
+            return HttpResponse::InternalServerError()
+                .json(format!("Failed to hash password: {}", e));
         }
     };
 
