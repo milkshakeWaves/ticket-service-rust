@@ -7,10 +7,11 @@ use actix_web::{
     web::{Data, Json},
     HttpResponse, Responder,
 };
+use serde_json::json;
 
 #[get("/status")]
 pub async fn status() -> impl Responder {
-    HttpResponse::Ok().body("{\"status\": \"UP\"}")
+    HttpResponse::Ok().json(json!({"status": "UP"}))
 }
 
 #[get("/users")]
@@ -23,8 +24,14 @@ pub async fn get_all_user(state: Data<PostgresAppState>) -> impl Responder {
         .fetch_all(&state.db())
         .await
     {
-        Ok(users) => HttpResponse::Ok().json(users),
-        Err(e) => HttpResponse::NotFound().json(format!("No user found: {}", e)),
+        Ok(users) => {
+            if users.is_empty() {
+                HttpResponse::NotFound().json("No user found")
+            } else {
+                HttpResponse::Ok().json(users)
+            }
+        }
+        Err(e) => HttpResponse::InternalServerError().json(format!("Database error: {}", e)),
     }
 }
 
@@ -33,12 +40,15 @@ pub async fn create_user(
     state: Data<PostgresAppState>,
     body: Json<CreateUserBody>,
 ) -> impl Responder {
-    let query_string = "INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id, username, password, email";
+    let query_string = "INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id, username, email";
     let password_hash = match hash_password(body.password.to_string()) {
         Ok(hash) => hash,
-        Err(_) => return HttpResponse::InternalServerError().json("Failed to hash password"),
+        Err(e) => {
+            println!("Failed to hash password: {}", e);
+            return HttpResponse::InternalServerError().json("Failed to hash password");
+        }
     };
-    
+
     match sqlx::query_as::<_, User>(query_string)
         .bind(body.username.to_string())
         .bind(password_hash)
