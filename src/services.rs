@@ -23,7 +23,7 @@ pub async fn status() -> impl Responder {
 #[get("/users")]
 pub async fn get_all_user(state: Data<PostgresAppState>) -> impl Responder {
     let query_string = r#"
-        SELECT id, username, password, email
+        SELECT id, username, email
         FROM users
     "#;
     match sqlx::query_as::<_, User>(query_string)
@@ -41,7 +41,7 @@ pub async fn create_user(
     body: Json<CreateUserBody>,
 ) -> impl Responder {
     let query_string = "INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id, username, password, email";
-    let password_hash = hash_password(body.password.to_string());
+    let password_hash = hash_password(body.password.to_string()).expect("Cannot hash password");
 
     match sqlx::query_as::<_, User>(query_string)
         .bind(body.username.to_string())
