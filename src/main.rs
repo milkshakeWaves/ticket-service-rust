@@ -8,7 +8,7 @@ use std::time::Duration;
 use actix_web::{web::Data, App, HttpServer};
 use dotenv::dotenv;
 use repository::PostgresAppState;
-use services::{create_user, get_all_user, status};
+use services::{create_user, get_all_user, login, status};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -33,6 +33,7 @@ async fn main() -> std::io::Result<()> {
             .service(status)
             .service(get_all_user)
             .service(create_user)
+            .service(login)
     })
     .bind((address, port))?
     .run()
