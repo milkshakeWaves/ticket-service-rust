@@ -7,17 +7,10 @@ use actix_web::{
     web::{Data, Json},
     HttpResponse, Responder,
 };
-use serde_json::Value;
 
 #[get("/status")]
 pub async fn status() -> impl Responder {
-    let data = r#"
-        {
-            "status": "UP"
-        }"#;
-
-    let v: Value = serde_json::from_str(data).unwrap();
-    HttpResponse::Ok().json(v)
+    HttpResponse::Ok().body("{\"status\": \"UP\"}")
 }
 
 #[get("/users")]
@@ -41,8 +34,11 @@ pub async fn create_user(
     body: Json<CreateUserBody>,
 ) -> impl Responder {
     let query_string = "INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id, username, password, email";
-    let password_hash = hash_password(body.password.to_string()).expect("Cannot hash password");
-
+    let password_hash = match hash_password(body.password.to_string()) {
+        Ok(hash) => hash,
+        Err(_) => return HttpResponse::InternalServerError().json("Failed to hash password"),
+    };
+    
     match sqlx::query_as::<_, User>(query_string)
         .bind(body.username.to_string())
         .bind(password_hash)
