@@ -1,7 +1,7 @@
 use sqlx::{postgres::PgPoolOptions, Database, Pool, Postgres};
 use std::time::Duration;
 
-trait AppState<D: Database> {
+pub trait AppState<D: Database> {
     fn db(&self) -> Pool<D>;
 }
 
