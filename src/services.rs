@@ -40,8 +40,7 @@ pub async fn create_user(
     state: Data<PostgresAppState>,
     body: Json<CreateUserBody>,
 ) -> impl Responder {
-    let query_string =
-        "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email";
+    let query_string = "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email";
     let password_hash = match hash_password(body.password.to_string()) {
         Ok(hash) => hash,
         Err(e) => {
@@ -68,18 +67,21 @@ pub async fn login(state: Data<PostgresAppState>, body: Json<LoginUser>) -> impl
 
     match sqlx::query_as::<_, PrivateUser>(query_string)
         .bind(body.email.to_string())
-        .fetch_one(&state.db())
+        .fetch_optional(&state.db())
         .await
     {
-        Ok(user) => match verify_hashed_password(body.password.to_string(), user.password) {
-            Ok(true) => HttpResponse::Ok().json("Login successfull"),
-            Ok(false) => {
-                HttpResponse::Unauthorized().json("User does not exist or wrong credentials")
-            }
-            Err(e) => {
-                return HttpResponse::InternalServerError()
-                    .json(format!("Failed to hash password: {}", e))
-            }
+        Ok(user_option) => match user_option {
+            Some(user) => match verify_hashed_password(body.password.to_string(), user.password) {
+                Ok(true) => HttpResponse::Ok().json("Login successfull"),
+                Ok(false) => {
+                    HttpResponse::Unauthorized().json("User does not exist or wrong credentials")
+                }
+                Err(e) => {
+                    return HttpResponse::InternalServerError()
+                        .json(format!("Password verification failed: {}", e))
+                }
+            },
+            None => HttpResponse::Unauthorized().json("User does not exist or wrong credentials"),
         },
         Err(e) => {
             HttpResponse::InternalServerError().json(format!("Failed to retrieve user: {}", e))
