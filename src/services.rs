@@ -78,7 +78,7 @@ pub async fn login(state: Data<PostgresAppState>, body: Json<LoginUser>) -> impl
                 }
                 Err(e) => {
                     return HttpResponse::InternalServerError()
-                        .json(format!("Failed to hash password: {}", e))
+                        .json(format!("Password verification failed: {}", e))
                 }
             },
             None => HttpResponse::Unauthorized().json("User does not exist or wrong credentials"),
