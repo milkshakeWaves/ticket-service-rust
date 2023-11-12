@@ -1,5 +1,5 @@
 [package]
-name = "ticket-service-rust"
+name = "ticket_service_rust"
 version = "0.1.0"
 edition = "2021"
 
