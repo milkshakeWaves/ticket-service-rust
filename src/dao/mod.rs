@@ -1,4 +1,4 @@
-use super::models::{User, CreateUserBody, InternalUser};
+use super::models::{User, InternalUser};
 
 pub mod db_context;
 mod user_dao;
