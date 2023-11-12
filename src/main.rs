@@ -1,7 +1,7 @@
+mod crypto;
 mod models;
 mod repository;
 mod services;
-mod crypto;
 
 use std::time::Duration;
 
@@ -26,8 +26,7 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Cannot create postgres pool");
 
-    println!("Starting the server...");
-    HttpServer::new(move || {
+    let app = HttpServer::new(move || {
         App::new()
             .app_data(Data::new(app_state.clone()))
             .service(status)
@@ -35,7 +34,9 @@ async fn main() -> std::io::Result<()> {
             .service(create_user)
             .service(login)
     })
-    .bind((address, port))?
-    .run()
-    .await
+    .bind((address, port))?;
+
+    println!("Listening on: {}", port);
+
+    app.run().await
 }
