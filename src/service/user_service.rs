@@ -20,8 +20,14 @@ pub async fn get_all_users(app_state: web::Data<AppState<'_>>) -> impl Responder
     let users = app_state.context.users.get_all_users().await;
 
     match users {
-        Err(_) => HttpResponse::NotFound().finish(),
-        Ok(users) => HttpResponse::Ok().json(users),
+        Err(_) => HttpResponse::InternalServerError().finish(),
+        Ok(users) => {
+            if users.is_empty() {
+                HttpResponse::NotFound().finish()
+            } else {
+                HttpResponse::Ok().json(users)
+            }
+        }
     }
 }
 
@@ -36,7 +42,7 @@ pub async fn create_user(
             let password = &user.password;
             hash_password(password)
         }
-    ).await.unwrap();
+    ).await.expect("Failed to hash password");
 
     match hashed_pass {
         Ok(password) => {
