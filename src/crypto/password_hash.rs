@@ -1,6 +1,6 @@
 use argon2::{
-    password_hash::{rand_core::OsRng, PasswordHasher, SaltString, Error},
-    Argon2, PasswordVerifier, PasswordHash,
+    password_hash::{rand_core::OsRng, Error, PasswordHasher, SaltString},
+    Argon2, PasswordHash, PasswordVerifier,
 };
 
 pub fn hash_password(password_to_hash: &str) -> Result<String, Error> {
@@ -10,10 +10,13 @@ pub fn hash_password(password_to_hash: &str) -> Result<String, Error> {
     Ok(result.to_string())
 }
 
-pub fn verify_hashed_password(password: String, stored_hashed_password: String) -> Result<bool, Error> {
-    let parsed_hash = PasswordHash::new(&stored_hashed_password)?;
-    match Argon2::default().verify_password(password.as_bytes(), &parsed_hash) {
-        Ok(()) => Ok(true),
-        Err(_) => Ok(false)
-    }
+pub fn verify_hashed_password(password: &str, stored_hashed_password: &str) -> Result<bool, Error> {
+    let parsed_hash = PasswordHash::new(stored_hashed_password)?;
+    Argon2::default()
+        .verify_password(password.as_bytes(), &parsed_hash)
+        .map(|()| true)
+        .or_else(|e| match e {
+            Error::Password => Ok(false),
+            _ => Err(e),
+        })
 }

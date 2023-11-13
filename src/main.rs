@@ -29,9 +29,8 @@ async fn main() -> std::io::Result<()> {
             .app_data(app_state.clone())
             .configure(service::init_user_service)
     })
-    .bind((address, port))?;
+    .bind((address.clone(), port))?;
 
-    println!("Listening on: {}", port);
-
+    println!("Listening on: {}:{}", address, port);
     app.run().await
 }
