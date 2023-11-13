@@ -77,8 +77,9 @@ pub async fn login(app_state: web::Data<AppState<'_>>, body: Json<LoginUser>) ->
                     HttpResponse::Unauthorized().json(wrong_credentials_msg)
                 }
                 Err(e) => {
+                    println!("Password verification failed: {}", e);
                     return HttpResponse::InternalServerError()
-                        .json(format!("Password verification failed: {}", e))
+                        .json("An error occurred during login")
                 }
             },
             None => HttpResponse::Unauthorized().json(wrong_credentials_msg),
