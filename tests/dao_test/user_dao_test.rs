@@ -21,7 +21,7 @@ async fn add_user_returns_1() -> Result<(), sqlx::Error> {
 async fn add_user_returns_err_when_duplicate_email_is_added(
 ) -> Result<(), sqlx::Error> {
     let db = init_db_context().await;
-
+    
     let email = "bob@email.com";
     let password = "password";
 
@@ -38,7 +38,7 @@ async fn add_user_returns_err_when_duplicate_email_is_added(
 }
 
 #[actix_rt::test]
-async fn get_user_by_email_returns_error_when_user_does_not_exist() -> () {
+async fn get_user_by_email_returns_empty_user_when_user_does_not_exist() -> () {
     let db = init_db_context().await;
 
     let result = db.users.get_user_by_email("non_existing@email.com").await;
@@ -48,7 +48,7 @@ async fn get_user_by_email_returns_error_when_user_does_not_exist() -> () {
 #[actix_rt::test]
 async fn get_user_by_email_returns_user_when_user_exists() -> Result<(), sqlx::Error> {
     let db = init_db_context().await;
-    
+        
     let email = "email@email.com";
     let password = "password";
 
@@ -68,7 +68,7 @@ async fn get_user_by_email_returns_user_when_user_exists() -> Result<(), sqlx::E
 #[actix_rt::test]
 async fn delete_user_returns_0_when_user_does_not_exist() -> () {
     let db = init_db_context().await;
-    let email = "email@email.com";
+    let email = "fake@email.com";
 
     let result = db.users.delete_user(email).await;
     assert!(result.is_ok());
