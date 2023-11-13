@@ -6,7 +6,7 @@ use serde_json::json;
 pub fn init(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all_users);
     cfg.service(create_user);
-    cfg.service(get_user);
+    cfg.service(login);
 }
 
 #[get("/status")]
@@ -52,7 +52,7 @@ pub async fn create_user(
 }
 
 #[post("/login")]
-pub async fn get_user(app_state: web::Data<AppState<'_>>, body: Json<LoginUser>) -> impl Responder {
+pub async fn login(app_state: web::Data<AppState<'_>>, body: Json<LoginUser>) -> impl Responder {
     let user_option = app_state.context.users.get_user_by_email(&body.email).await;
 
     match user_option {
