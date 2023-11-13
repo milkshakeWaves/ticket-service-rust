@@ -1,14 +1,9 @@
-mod models;
-mod repository;
-mod services;
-mod crypto;
+use std::sync::{Arc, Mutex};
 
-use std::time::Duration;
-
-use actix_web::{web::Data, App, HttpServer};
+use actix_web::{web, App, HttpServer};
 use dotenv::dotenv;
-use repository::PostgresAppState;
-use services::{create_user, get_all_user, login, status};
+use ticket_service_rust::dao::Database;
+use ticket_service_rust::{service, AppState};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -22,20 +17,20 @@ async fn main() -> std::io::Result<()> {
         .parse::<u16>()
         .expect("PORT variable is not an int");
 
-    let app_state = PostgresAppState::new(5, &db_connection_string, Duration::from_secs(10))
-        .await
-        .expect("Cannot create postgres pool");
+    let db_context = Database::new(&db_connection_string).await;
 
-    println!("Starting the server...");
-    HttpServer::new(move || {
+    let app_state = web::Data::new(AppState {
+        connections: Mutex::new(0),
+        context: Arc::new(db_context),
+    });
+
+    let app = HttpServer::new(move || {
         App::new()
-            .app_data(Data::new(app_state.clone()))
-            .service(status)
-            .service(get_all_user)
-            .service(create_user)
-            .service(login)
+            .app_data(app_state.clone())
+            .configure(service::init_user_service)
     })
-    .bind((address, port))?
-    .run()
-    .await
+    .bind((address.clone(), port))?;
+
+    println!("Listening on: {}:{}", address, port);
+    app.run().await
 }
