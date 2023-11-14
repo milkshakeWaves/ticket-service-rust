@@ -1,4 +1,4 @@
-use super::User;
+use super::{User, Event};
 use sqlx::postgres::PgRow;
 use sqlx::{FromRow, PgPool};
 use std::marker::PhantomData;
@@ -56,7 +56,8 @@ where
 }
 
 pub struct Database<'c> {
-    pub users: Arc<Table<'c, User>>
+    pub users: Arc<Table<'c, User>>,
+    pub events: Arc<Table<'c, Event>>
 }
 
 impl<'a> Database<'a> {
@@ -66,6 +67,7 @@ impl<'a> Database<'a> {
 
         Database {
             users: Arc::from(Table::new(pool.clone())),
+            events: Arc::from(Table::new(pool.clone()))
         }
     }
 }

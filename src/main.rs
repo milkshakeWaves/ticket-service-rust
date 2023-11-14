@@ -28,6 +28,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(app_state.clone())
             .configure(service::init_user_service)
+            .configure(service::init_event_service)
     })
     .bind((address.clone(), port))?;
 

@@ -1,7 +1,9 @@
 use super::models::{User, InternalUser};
+use super::models::Event;
 
 pub mod db_context;
 mod user_dao;
+mod event_dao;
 
 pub type Database<'c> = db_context::Database<'c>;
 pub type Table<'c, T> = db_context::Table<'c, T>;
