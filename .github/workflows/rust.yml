@@ -29,10 +29,8 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install sqlx-cli
       run: cargo install sqlx-cli --no-default-features --features native-tls,postgres
-    - name: Create database
-      run: sqlx database create
     - name: Run migration
-      run: sqlx migrate run
+      run: sqlx database create && sqlx migrate run
       env: 
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/ticket_app
     - name: Build
