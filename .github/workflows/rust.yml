@@ -36,4 +36,4 @@ jobs:
     - name: Build
       run: cargo build --verbose
     - name: Run tests
-      run: mv .env.github .env && cargo test --verbose
+      run: mv .env.github .env && ls && cargo test --verbose
