@@ -60,3 +60,5 @@ jobs:
     - name: Drop database
       if: success()
       run: sqlx database drop
+      env: 
+        DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
