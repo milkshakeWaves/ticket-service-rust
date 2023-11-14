@@ -28,6 +28,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Cache sqlx-cli
+      id: cache-sqlx-cli
       uses: actions/cache@v3
       with:
         path: |
@@ -36,8 +37,8 @@ jobs:
           ~/.cargo/registry
         key: ${{ runner.os }}-sqlx-cli-${{ hashFiles('**/Cargo.lock') }}
     - name: Install sqlx-cli
-      if: steps.cache-sqlx-cli.outputs.cache-hit != 'true'
       run: cargo install sqlx-cli --no-default-features --features native-tls,postgres
+      if: steps.cache-sqlx-cli.outputs.cache-hit != 'true'
     - name: Install pg_dump
       run: sudo apt-get install postgresql-client
     - name: Run migration
