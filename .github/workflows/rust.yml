@@ -32,7 +32,7 @@ jobs:
     - name: Run migration
       run: sqlx database create && sqlx migrate run
       env: 
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/ticket_app
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/ticket_app_test
     - name: Build
       run: cargo build --verbose
     - name: Run tests
