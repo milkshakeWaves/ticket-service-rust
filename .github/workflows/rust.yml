@@ -27,8 +27,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Cache sqlx-cli
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin/sqlx
+          ~/.cargo/git
+          ~/.cargo/registry
+        key: ${{ runner.os }}-sqlx-cli-${{ hashFiles('**/Cargo.lock') }}
     - name: Install sqlx-cli
       run: cargo install sqlx-cli --no-default-features --features native-tls,postgres
+      if: steps.cache-sqlx-cli.outputs.cache-hit != 'true'
     - name: Run migration
       run: sqlx database create && sqlx migrate run
       env: 
