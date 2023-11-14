@@ -20,3 +20,34 @@ pub fn verify_hashed_password(password: &str, stored_hashed_password: &str) -> R
             _ => Err(e),
         })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn verifying_the_correct_hash_returns_true() -> Result<(), Error> {
+        let plain_txt_pass = "test-password!123";
+        let hashed_pass = hash_password(plain_txt_pass)?;
+        assert!(verify_hashed_password(plain_txt_pass, &hashed_pass)?);
+
+        Ok(())
+    }
+
+    #[test]
+    fn verifying_a_wrong_hash_returns_false() -> Result<(), Error> {
+        let plain_txt_pass = "test-password!123";
+        let wrong_hashed_pass = hash_password(&plain_txt_pass[0..4])?;
+        assert!(verify_hashed_password(plain_txt_pass, &wrong_hashed_pass).is_ok_and(|v| !v));
+
+        Ok(())
+    }
+
+    #[test]
+    fn verifying_a_not_well_formed_hash_returns_error() -> Result<(), Error> {
+        let plain_txt_pass = "test-password!123";
+        assert!(verify_hashed_password(plain_txt_pass, "not_well_formed_hash").is_err());
+
+        Ok(())
+    }
+}
