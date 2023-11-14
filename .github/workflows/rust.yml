@@ -13,10 +13,27 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ticket_app
+        ports:
+        - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
     - uses: actions/checkout@v3
+    - name: Install sqlx-cli
+      run: cargo install sqlx-cli --no-default-features --features native-tls,postgres
+    - name: Run migration
+      run: sqlx migrate run
+      env: 
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/ticket_app
     - name: Build
       run: cargo build --verbose
-    # - name: Run tests
-    #   run: cargo test --verbose
+    - name: Run tests
+      run: mv .env.github .env && cargo test --verbose

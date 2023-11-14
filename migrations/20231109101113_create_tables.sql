@@ -1,12 +1,12 @@
 -- Add migration script here
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(200) NOT NULL,
     created_at TIMESTAMP DEFAULT current_timestamp
 );
 
-CREATE TABLE event (
+CREATE TABLE IF NOT EXISTS event (
     id SERIAL PRIMARY KEY,
     description VARCHAR(1024) NOT NULL,
     place VARCHAR(255) NOT NULL,
