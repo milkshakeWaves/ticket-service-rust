@@ -57,7 +57,7 @@ where
 
 pub struct Database<'c> {
     pub users: Arc<Table<'c, User>>,
-    pub event: Arc<Table<'c, Event>>
+    pub events: Arc<Table<'c, Event>>
 }
 
 impl<'a> Database<'a> {
@@ -67,7 +67,7 @@ impl<'a> Database<'a> {
 
         Database {
             users: Arc::from(Table::new(pool.clone())),
-            event: Arc::from(Table::new(pool.clone()))
+            events: Arc::from(Table::new(pool.clone()))
         }
     }
 }
