@@ -1,8 +1,11 @@
 use ticket_service_rust::dao::Database;
+use dotenv::dotenv;
 
 async fn init_db_context() -> Database<'static> {
-    let db_connection_string = "postgresql://ticket_service:ticket_service@localhost:5432/ticket_app_test";
-    Database::new(db_connection_string).await
+    dotenv().ok();
+    let db_connection_string = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+
+    Database::new(&db_connection_string).await
 }
 
 #[cfg(test)]
