@@ -41,6 +41,8 @@ jobs:
       if: steps.cache-sqlx-cli.outputs.cache-hit != 'true'
     - name: Install pg_dump
       run: sudo apt-get install postgresql-client
+    - name: Prepare .env file
+      run: mv .env.github .env
     - name: Run migration
       run: sqlx database create && sqlx migrate run
       env: 
@@ -48,7 +50,7 @@ jobs:
     - name: Build
       run: cargo build --verbose
     - name: Run tests
-      run: mv .env.github .env && cargo test --verbose
+      run: cargo test --verbose
     - uses: actions/upload-artifact@v2
       with:
         name: db-artifact
