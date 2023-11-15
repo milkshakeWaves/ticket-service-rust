@@ -4,7 +4,6 @@ use chrono::{DateTime, Utc};
 
 #[derive(Serialize, FromRow, Debug)]
 pub struct Event {
-    pub id: i32,
     pub code: String,
     pub description: String,
     pub place: String,

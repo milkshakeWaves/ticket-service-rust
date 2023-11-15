@@ -38,12 +38,15 @@ async fn get_ticket_returns_empty_ticket_when_user_does_not_exist() -> () {
     assert!(result.is_ok_and(|tickets| tickets.is_empty()));
 }
 
+#[serial]
 #[actix_rt::test]
-async fn get_ticket_returns_empty_ticket_when_user_didnt_buy_any_ticket() -> () {
+async fn get_ticket_returns_empty_ticket_when_user_didnt_buy_any_ticket() -> Result<(), sqlx::Error> {
     let db = init_db_context().await;
 
     let result = db.tickets.get_tickets_by_user("gigio@email.com").await;
     assert!(result.is_ok_and(|tickets| tickets.is_empty()));
+
+    Ok(())
 }
 
 #[serial]

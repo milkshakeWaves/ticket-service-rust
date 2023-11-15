@@ -5,13 +5,13 @@ use super::{Event, Table};
 impl<'c> Table<'c, Event> {
     pub async fn get_all_events(&self) -> Result<Vec<Event>, sqlx::Error> {
         let query_string =
-            "SELECT id, code, description, place, available_seats, price, date FROM event";
+            "SELECT code, description, place, available_seats, price, date FROM event";
         sqlx::query_as(query_string).fetch_all(&*self.pool).await
     }
 
     pub async fn get_event_by_code(&self, code: &str) -> Result<Option<Event>, sqlx::Error> {
         let query_string =
-            "SELECT id, code, description, place, available_seats, price, date FROM event WHERE code = $1";
+            "SELECT code, description, place, available_seats, price, date FROM event WHERE code = $1";
         sqlx::query_as(query_string)
             .bind(code)
             .fetch_optional(&*self.pool)
@@ -23,7 +23,7 @@ impl<'c> Table<'c, Event> {
         event_place: &str,
     ) -> Result<Option<Event>, sqlx::Error> {
         let query_string =
-            "SELECT id, code, description, place, available_seats, price, date FROM event WHERE place = $1";
+            "SELECT code, description, place, available_seats, price, date FROM event WHERE place = $1";
         sqlx::query_as(query_string)
             .bind(event_place)
             .fetch_optional(&*self.pool)
