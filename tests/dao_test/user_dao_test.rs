@@ -38,11 +38,13 @@ async fn add_user_returns_err_when_duplicate_email_is_added(
 }
 
 #[actix_rt::test]
-async fn get_user_by_email_returns_empty_user_when_user_does_not_exist() -> () {
+async fn get_user_by_email_returns_empty_user_when_user_does_not_exist() -> Result<(), sqlx::Error> {
     let db = init_db_context().await;
 
     let result = db.users.get_user_by_email("non_existing@email.com").await;
     assert!(result.is_ok_and(|user_opt| user_opt.is_none()));
+
+    Ok(())
 }
 
 #[actix_rt::test]
@@ -66,7 +68,7 @@ async fn get_user_by_email_returns_user_when_user_exists() -> Result<(), sqlx::E
 }
 
 #[actix_rt::test]
-async fn delete_user_returns_0_when_user_does_not_exist() -> () {
+async fn delete_user_returns_0_when_user_does_not_exist() -> Result<(), sqlx::Error> {
     let db = init_db_context().await;
     let email = "fake@email.com";
 
@@ -74,4 +76,6 @@ async fn delete_user_returns_0_when_user_does_not_exist() -> () {
     assert!(result.is_ok());
     let result = result.unwrap();
     assert_eq!(0, result);
+
+    Ok(())
 }

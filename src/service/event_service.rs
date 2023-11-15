@@ -1,13 +1,14 @@
-use super::{AppState, CreateEventBody};
-use actix_web::{get, post, web, HttpResponse, Responder};
+use super::{AppState, CreateEventBody, Event};
+use actix_web::{get, post, delete, web, HttpResponse, Responder};
 
 pub fn init(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all_events);
     cfg.service(create_event);
-    cfg.service(get_event_by_id);
+    cfg.service(get_event_by_code);
+    cfg.service(delete_event);
 }
 
-#[get("/event")]
+#[get("/events")]
 pub async fn get_all_events(app_state: web::Data<AppState<'_>>) -> impl Responder {
     let events_res = app_state.context.events.get_all_events().await;
 
@@ -15,7 +16,7 @@ pub async fn get_all_events(app_state: web::Data<AppState<'_>>) -> impl Responde
         Err(_) => HttpResponse::InternalServerError().finish(),
         Ok(events) => {
             if events.is_empty() {
-                HttpResponse::NotFound().finish()
+                HttpResponse::Ok().json(Vec::<Event>::new())
             } else {
                 HttpResponse::Ok().json(events)
             }
@@ -23,12 +24,12 @@ pub async fn get_all_events(app_state: web::Data<AppState<'_>>) -> impl Responde
     }
 }
 
-#[get("/event/{id}")]
-pub async fn get_event_by_id(
-    event_id: web::Path<i32>,
+#[get("/events/{code}")]
+pub async fn get_event_by_code(
+    event_code: web::Path<String>,
     app_state: web::Data<AppState<'_>>,
 ) -> impl Responder {
-    let event_result = app_state.context.events.get_event_by_id(*event_id).await;
+    let event_result = app_state.context.events.get_event_by_code(&event_code).await;
 
     match event_result {
         Ok(event_option) => {
@@ -39,12 +40,12 @@ pub async fn get_event_by_id(
             }
         }
         Err(e) => {
-            HttpResponse::InternalServerError().json(format!("Failed to retrieve user: {}", e))
+            HttpResponse::InternalServerError().json(format!("Failed to retrieve event: {}", e))
         }
     }
 }
 
-#[post("/event")]
+#[post("/events")]
 pub async fn create_event(
     event_body: web::Json<CreateEventBody>,
     app_state: web::Data<AppState<'_>>,
@@ -55,6 +56,21 @@ pub async fn create_event(
         Ok(_) => HttpResponse::Ok().json(format!("Event {} created", event_body.description)),
         Err(e) => {
             HttpResponse::InternalServerError().json(format!("Failed to create event: {}", e))
+        }
+    }
+}
+
+#[delete("/events/{code}")]
+pub async fn delete_event(
+    event_code: web::Path<String>,
+    app_state: web::Data<AppState<'_>>,
+) -> impl Responder {
+    let query_res = app_state.context.events.delete_event(&event_code).await;
+
+    match query_res {
+        Ok(_) => HttpResponse::Ok().json("Event deleted"),
+        Err(e) => {
+            HttpResponse::InternalServerError().json(format!("Failed to delete event: {}", e))
         }
     }
 }
