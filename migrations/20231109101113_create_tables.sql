@@ -17,9 +17,9 @@ CREATE TABLE IF NOT EXISTS event (
 );
 
 CREATE TABLE IF NOT EXISTS ticket (
+    id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     event_id INTEGER NOT NULL,
-    PRIMARY KEY (user_id, event_id),
 
     CONSTRAINT user_id FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT event_id FOREIGN KEY(event_id) REFERENCES event(id) ON DELETE CASCADE
