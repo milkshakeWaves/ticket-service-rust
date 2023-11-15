@@ -7,7 +7,7 @@ use super::Ticket;
 impl<'c> Table<'c, Ticket> {
     pub async fn get_all_tickets(&self) -> Result<Vec<SoldTicketPerUser>, sqlx::Error> {
         let query_string = "
-            SELECT u.id, u.email, e.id, e.description, e.place, e.date 
+            SELECT u.id AS user_id, u.email, e.id AS event_id, e.description, e.place, e.date 
             FROM users u JOIN ticket t ON u.id = t.user_id
                 JOIN event e ON t.event_id = e.id
         ";

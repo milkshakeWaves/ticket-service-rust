@@ -5,6 +5,7 @@ pub fn init(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all_events);
     cfg.service(create_event);
     cfg.service(get_event_by_code);
+    cfg.service(delete_event);
 }
 
 #[get("/events")]
@@ -39,7 +40,7 @@ pub async fn get_event_by_code(
             }
         }
         Err(e) => {
-            HttpResponse::InternalServerError().json(format!("Failed to retrieve user: {}", e))
+            HttpResponse::InternalServerError().json(format!("Failed to retrieve event: {}", e))
         }
     }
 }
@@ -59,9 +60,9 @@ pub async fn create_event(
     }
 }
 
-#[delete("/events")]
+#[delete("/events/{code}")]
 pub async fn delete_event(
-    event_code: web::Json<String>,
+    event_code: web::Path<String>,
     app_state: web::Data<AppState<'_>>,
 ) -> impl Responder {
     let query_res = app_state.context.events.delete_event(&event_code).await;

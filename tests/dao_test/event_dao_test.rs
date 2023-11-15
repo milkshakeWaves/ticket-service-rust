@@ -29,7 +29,7 @@ async fn add_event_returns_1() -> Result<(), sqlx::Error> {
 }
 
 #[actix_rt::test]
-async fn get_event_by_id_returns_empty_event_when_event_does_not_exist() -> () {
+async fn get_event_by_code_returns_empty_event_when_event_does_not_exist() -> () {
     let db = init_db_context().await;
 
     let result = db.events.get_event_by_code("666").await;

@@ -3,8 +3,10 @@ use actix_web::{delete, get, post, web, HttpResponse, Responder};
 
 pub fn init(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all_tickets);
+    cfg.service(get_tickets_by_user_email);
     cfg.service(create_ticket);
     cfg.service(get_tickets_by_event_code);
+    cfg.service(delete_ticket);
 }
 
 #[get("/tickets")]
@@ -37,7 +39,7 @@ pub async fn get_tickets_by_user_email(
     match tickets_result {
         Ok(tickets) => HttpResponse::Ok().json(tickets),
         Err(e) => {
-            HttpResponse::InternalServerError().json(format!("Failed to retrieve user: {}", e))
+            HttpResponse::InternalServerError().json(format!("Failed to retrieve ticket: {}", e))
         }
     }
 }
@@ -56,7 +58,7 @@ pub async fn get_tickets_by_event_code(
     match tickets_result {
         Ok(tickets) => HttpResponse::Ok().json(tickets),
         Err(e) => {
-            HttpResponse::InternalServerError().json(format!("Failed to retrieve user: {}", e))
+            HttpResponse::InternalServerError().json(format!("Failed to retrieve ticket: {}", e))
         }
     }
 }
@@ -84,7 +86,7 @@ pub async fn create_ticket(
 }
 
 #[delete("/tickets")]
-pub async fn delete_event(
+pub async fn delete_ticket(
     user_email: web::Json<String>,
     app_state: web::Data<AppState<'_>>,
 ) -> impl Responder {
