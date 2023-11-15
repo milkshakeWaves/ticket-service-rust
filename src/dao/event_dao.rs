@@ -32,7 +32,7 @@ impl<'c> Table<'c, Event> {
 
     pub async fn add_event(&self, event: &CreateEventBody) -> Result<u64, sqlx::Error> {
         let query_string =
-            "INSERT INTO event (code, description, place, available_seats, price, date) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, description, place, available_seats, price, date";
+            "INSERT INTO event (code, description, place, available_seats, price, date) VALUES ($1, $2, $3, $4, $5, $6)";
         sqlx::query(query_string)
             .bind(&event.code)
             .bind(&event.description)
