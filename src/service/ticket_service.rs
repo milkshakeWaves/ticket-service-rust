@@ -80,7 +80,7 @@ pub async fn create_ticket(
             ticket_body.user_email, ticket_body.event_code
         )),
         Err(e) => {
-            HttpResponse::InternalServerError().json(format!("Failed to create event: {}", e))
+            HttpResponse::InternalServerError().json(format!("Failed to create ticket: {}", e))
         }
     }
 }
@@ -95,7 +95,7 @@ pub async fn delete_ticket(
     match query_res {
         Ok(_) => HttpResponse::Ok().json("Ticket deleted"),
         Err(e) => {
-            HttpResponse::InternalServerError().json(format!("Failed to delete event: {}", e))
+            HttpResponse::InternalServerError().json(format!("Failed to delete ticket: {}", e))
         }
     }
 }

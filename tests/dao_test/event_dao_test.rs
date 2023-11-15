@@ -111,9 +111,9 @@ async fn get_event_by_code_returns_event_when_event_exists() -> Result<(), sqlx:
 #[actix_rt::test]
 async fn delete_event_returns_0_when_event_does_not_exist() -> () {
     let db = init_db_context().await;
-    let event_id = "666";
+    let event_code = "666";
 
-    let result = db.events.delete_event(event_id).await;
+    let result = db.events.delete_event(event_code).await;
     assert!(result.is_ok());
     let result = result.unwrap();
     assert_eq!(0, result);
