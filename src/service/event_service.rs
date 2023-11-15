@@ -1,4 +1,4 @@
-use super::{AppState, CreateEventBody};
+use super::{AppState, CreateEventBody, Event};
 use actix_web::{get, post, delete, web, HttpResponse, Responder};
 
 pub fn init(cfg: &mut web::ServiceConfig) {
@@ -16,7 +16,7 @@ pub async fn get_all_events(app_state: web::Data<AppState<'_>>) -> impl Responde
         Err(_) => HttpResponse::InternalServerError().finish(),
         Ok(events) => {
             if events.is_empty() {
-                HttpResponse::NotFound().finish()
+                HttpResponse::Ok().json(Vec::<Event>::new())
             } else {
                 HttpResponse::Ok().json(events)
             }

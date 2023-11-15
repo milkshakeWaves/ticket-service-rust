@@ -1,5 +1,7 @@
 use super::crypto::password_hash;
-use super::models::{CreateEventBody, CreateTicketBody, CreateUserBody, LoginUser};
+use super::models::{
+    CreateEventBody, CreateTicketBody, CreateUserBody, Event, LoginUser, SoldTicketPerUser,
+};
 use super::AppState;
 
 mod event_service;

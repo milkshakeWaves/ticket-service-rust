@@ -1,4 +1,4 @@
-use super::{AppState, CreateTicketBody};
+use super::{AppState, CreateTicketBody, SoldTicketPerUser};
 use actix_web::{delete, get, post, web, HttpResponse, Responder};
 
 pub fn init(cfg: &mut web::ServiceConfig) {
@@ -17,7 +17,7 @@ pub async fn get_all_tickets(app_state: web::Data<AppState<'_>>) -> impl Respond
         Err(_) => HttpResponse::InternalServerError().finish(),
         Ok(sold_tickets) => {
             if sold_tickets.is_empty() {
-                HttpResponse::NotFound().finish()
+                HttpResponse::Ok().json(Vec::<SoldTicketPerUser>::new())
             } else {
                 HttpResponse::Ok().json(sold_tickets)
             }

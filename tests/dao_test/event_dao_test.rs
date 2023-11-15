@@ -29,11 +29,13 @@ async fn add_event_returns_1() -> Result<(), sqlx::Error> {
 }
 
 #[actix_rt::test]
-async fn get_event_by_code_returns_empty_event_when_event_does_not_exist() -> () {
+async fn get_event_by_code_returns_empty_event_when_event_does_not_exist() -> Result<(), sqlx::Error> {
     let db = init_db_context().await;
 
     let result = db.events.get_event_by_code("666").await;
     assert!(result.is_ok_and(|event_opt| event_opt.is_none()));
+
+    Ok(())
 }
 
 #[actix_rt::test]
@@ -109,7 +111,7 @@ async fn get_event_by_code_returns_event_when_event_exists() -> Result<(), sqlx:
 }
 
 #[actix_rt::test]
-async fn delete_event_returns_0_when_event_does_not_exist() -> () {
+async fn delete_event_returns_0_when_event_does_not_exist() -> Result<(), sqlx::Error> {
     let db = init_db_context().await;
     let event_code = "666";
 
@@ -117,10 +119,12 @@ async fn delete_event_returns_0_when_event_does_not_exist() -> () {
     assert!(result.is_ok());
     let result = result.unwrap();
     assert_eq!(0, result);
+
+    Ok(())
 }
 
 #[actix_rt::test]
-async fn get_all_events_return_all_events() -> () {
+async fn get_all_events_return_all_events() -> Result<(), sqlx::Error> {
     let db = init_db_context().await;
 
     let result = db.events.get_all_events().await;
@@ -128,4 +132,6 @@ async fn get_all_events_return_all_events() -> () {
     let result = result.unwrap();
 
     assert!(result.len() > 0);
+
+    Ok(())
 }

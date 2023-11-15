@@ -31,11 +31,13 @@ async fn add_ticket_returns_1() -> Result<(), sqlx::Error> {
 }
 
 #[actix_rt::test]
-async fn get_ticket_returns_empty_ticket_when_user_does_not_exist() -> () {
+async fn get_ticket_returns_empty_ticket_when_user_does_not_exist() -> Result<(), sqlx::Error> {
     let db = init_db_context().await;
 
     let result = db.tickets.get_tickets_by_user("666").await;
     assert!(result.is_ok_and(|tickets| tickets.is_empty()));
+
+    Ok(())
 }
 
 #[serial]
@@ -136,7 +138,7 @@ async fn get_tickets_by_events_returns_their_tickets_when_they_exist() -> Result
 }
 
 #[actix_rt::test]
-async fn delete_ticket_returns_0_when_ticket_does_not_exist() -> () {
+async fn delete_ticket_returns_0_when_ticket_does_not_exist() -> Result<(), sqlx::Error> {
     let db = init_db_context().await;
     let user_email = "666";
 
@@ -144,4 +146,6 @@ async fn delete_ticket_returns_0_when_ticket_does_not_exist() -> () {
     assert!(result.is_ok());
     let result = result.unwrap();
     assert_eq!(0, result);
+
+    Ok(())
 }
