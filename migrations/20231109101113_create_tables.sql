@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS event (
     id SERIAL PRIMARY KEY,
+    code VARCHAR(10) NOT NULL UNIQUE,
     description VARCHAR(1024) NOT NULL,
     place VARCHAR(255) NOT NULL,
     available_seats INTEGER NOT NULL,

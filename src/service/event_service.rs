@@ -4,7 +4,7 @@ use actix_web::{get, post, web, HttpResponse, Responder};
 pub fn init(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all_events);
     cfg.service(create_event);
-    cfg.service(get_event_by_id);
+    cfg.service(get_event_by_code);
 }
 
 #[get("/event")]
@@ -23,12 +23,12 @@ pub async fn get_all_events(app_state: web::Data<AppState<'_>>) -> impl Responde
     }
 }
 
-#[get("/event/{id}")]
-pub async fn get_event_by_id(
-    event_id: web::Path<i32>,
+#[get("/event/{code}")]
+pub async fn get_event_by_code(
+    event_code: web::Path<String>,
     app_state: web::Data<AppState<'_>>,
 ) -> impl Responder {
-    let event_result = app_state.context.events.get_event_by_id(*event_id).await;
+    let event_result = app_state.context.events.get_event_by_code(&event_code).await;
 
     match event_result {
         Ok(event_option) => {
